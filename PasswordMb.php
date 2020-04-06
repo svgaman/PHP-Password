@@ -279,7 +279,14 @@ class PasswordMb {
    *
    * @return string The generated password.
    */
-  public function generatePassword() {
+  public function generatePassword($forceMinLength) {
+
+    if ($forceMinLength > $this->minLength) {
+        $minLength = $forceMinLength;
+    }  else {
+        $minLength = $this->minLength;
+    }
+
     // Make sure that parameters don't overlap in such a way as to make
     // validation impossible.
     $this->_sanitizeInputs();
@@ -319,18 +326,18 @@ class PasswordMb {
     // Add symbols using the symbols array.
     if ($this->maxSymbols != 0) {
       $symbols = implode('', $this->allowedSymbols);
-      if ($this->minSymbols != 0 && strlen($symbols) > 0) {
+      if ($this->minSymbols != 0 && mb_strlen($symbols) > 0) {
         for ($i = 0; $i < $this->minSymbols; ++$i) {
-          $password .= $symbols[(rand() % strlen($symbols))];
+          $password .= $symbols[(rand() % mb_strlen($symbols))];
         }
       }
     }
 
     // If the created password isn't quite long enough then add some lowercase
     // letters to the password string.
-    if (strlen($password) < $this->minLength) {
-      while (strlen($password) < $this->minLength) {
-        $password .= $lowerLetters[(rand() % strlen($lowerLetters))];
+    if (mb_strlen($password) < $minLength) {
+      while (mb_strlen($password) < $minLength) {
+        $password .= $lowerLetters[(rand() % mb_strlen($lowerLetters))];
       }
     }
 
